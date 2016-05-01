@@ -7,14 +7,14 @@ const HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
 
 module.exports = {
   entry: [
-    './app/hello.jsx'
+    './app/app.jsx'
   ],
   module: {
     loaders: [
       {
-        test: /\.js$/,
+        test: /\.jsx$/,
         include: __dirname + '/app',
-        loader: 'babel-loader'
+        loader: 'babel'
       }
     ]
   },
