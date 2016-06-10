@@ -53,46 +53,65 @@
 
 	'use strict';
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 	var _react = __webpack_require__(2);
 
 	var _react2 = _interopRequireDefault(_react);
 
 	var _reactDom = __webpack_require__(34);
 
+	var _Tasks = __webpack_require__(169);
+
+	var _Tasks2 = _interopRequireDefault(_Tasks);
+
+	var _AddTasks = __webpack_require__(172);
+
+	var _AddTasks2 = _interopRequireDefault(_AddTasks);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	var App = _react2.default.createClass({
+	  displayName: 'App',
 
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	  getInitialState: function getInitialState() {
+	    return {
+	      tasks: ['Get milk', 'workout', 'do laundry', 'drink beer']
+	    };
+	  },
+	  addTask: function addTask(newTask) {
+	    var newState = this.state.tasks;
 
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	    newState.unshift(newTask);
+	    this.setState({ tasks: newState });
+	  },
+	  editTask: function editTask(editValue, index) {
+	    console.log('hit');
+	    this.state.tasks[index] = editValue;
+	    this.setState({ tasks: this.state.tasks });
+	  },
+	  deleteTask: function deleteTask(task) {
+	    console.log(task);
+	    var newState = this.state.tasks;
 
-	var App = function (_React$Component) {
-	  _inherits(App, _React$Component);
-
-	  function App() {
-	    _classCallCheck(this, App);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(App).apply(this, arguments));
+	    newState.splice(task, 1);
+	    this.setState({ tasks: newState });
+	  },
+	  render: function render() {
+	    return _react2.default.createElement(
+	      'div',
+	      null,
+	      _react2.default.createElement(_AddTasks2.default, { ref: 'newTasks', addTask: this.addTask }),
+	      _react2.default.createElement(_Tasks2.default, {
+	        tasks: this.state.tasks,
+	        deleteTask: this.deleteTask,
+	        editTask: this.editTask,
+	        ref: 'tasks' })
+	    );
 	  }
-
-	  _createClass(App, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2.default.createElement(
-	        'p',
-	        null,
-	        'Something rules these woods.  Someone....'
-	      );
-	    }
-	  }]);
-
-	  return App;
-	}(_react2.default.Component);
+	});
 
 	(0, _reactDom.render)(_react2.default.createElement(App, null), document.getElementById('app'));
+
+	// render(<App />, document.getElementById('app'));
 
 /***/ },
 /* 2 */
@@ -20137,6 +20156,190 @@
 	var ReactMount = __webpack_require__(159);
 
 	module.exports = ReactMount.renderSubtreeIntoContainer;
+
+/***/ },
+/* 169 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _taskItem = __webpack_require__(171);
+
+	var _taskItem2 = _interopRequireDefault(_taskItem);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var Tasks = _react2.default.createClass({
+	  displayName: 'Tasks',
+
+	  deleteTask: function deleteTask(e) {
+	    console.log(e.target.value);
+	    var taskIndex = e.target.value;
+
+	    this.props.deleteTask(taskIndex);
+	  },
+	  render: function render() {
+	    var taskList = this.props.tasks.map(function (task, index) {
+	      return _react2.default.createElement(_taskItem2.default, { index: index,
+	        key: index,
+	        ref: 'task',
+	        deleteTask: this.deleteTask,
+	        editTask: this.props.editTask,
+	        task: task
+	      });
+	    }.bind(this));
+
+	    return _react2.default.createElement(
+	      'ul',
+	      { className: 'task-list__ul' },
+	      taskList
+	    );
+	  }
+	});
+
+	module.exports = Tasks;
+
+/***/ },
+/* 170 */,
+/* 171 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var TaskItem = _react2.default.createClass({
+	  displayName: 'TaskItem',
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      editing: false,
+	      editingValue: this.props.task
+	    };
+	  },
+	  toggleEdit: function toggleEdit(e) {
+	    this.setState({
+	      editing: true,
+	      editingValue: this.props.task
+	    });
+	  },
+	  updateTask: function updateTask(e) {
+	    var updatedTask = e.target.value;
+	    this.setState({ editing: true, editingValue: updatedTask });
+	  },
+	  submitEdit: function submitEdit(e) {
+	    this.props.editTask(this.state.editingValue, e.target.value);
+	    this.setState({
+	      editing: false,
+	      editingValue: this.props.task
+	    });
+	  },
+	  render: function render() {
+	    return _react2.default.createElement(
+	      'li',
+	      { ref: 'task',
+	        key: this.props.index,
+	        index: this.props.index
+	      },
+	      _react2.default.createElement(
+	        'span',
+	        {
+	          className: this.state.editing ? 'hide' : ''
+	        },
+	        this.props.task
+	      ),
+	      _react2.default.createElement('input', {
+	        ref: 'update',
+	        className: this.state.editing ? '' : 'hide',
+	        onChange: this.updateTask,
+	        type: 'text',
+	        value: this.state.editingValue
+	      }),
+	      _react2.default.createElement(
+	        'button',
+	        {
+	          onClick: this.props.deleteTask,
+	          value: this.props.index
+	        },
+	        'X'
+	      ),
+	      _react2.default.createElement(
+	        'button',
+	        {
+	          className: this.state.editing ? 'hide' : '',
+	          onClick: this.toggleEdit,
+	          value: this.props.index
+	        },
+	        'Edit'
+	      ),
+	      _react2.default.createElement(
+	        'button',
+	        {
+	          className: this.state.editing ? '' : 'hide',
+	          onClick: this.submitEdit,
+	          value: this.props.index
+	        },
+	        'Submit'
+	      )
+	    );
+	  }
+	});
+
+	module.exports = TaskItem;
+
+/***/ },
+/* 172 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(34);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var AddTasks = _react2.default.createClass({
+	  displayName: 'AddTasks',
+
+	  getInitialState: function getInitialState() {
+	    return { newTask: '' };
+	  },
+	  submitNewTask: function submitNewTask(e) {
+	    e.preventDefault();
+	    var newTask = _reactDom2.default.findDOMNode(this.refs.newTask).value;
+
+	    if (newTask !== '') {
+	      this.props.addTask(newTask);
+	    }
+	  },
+	  render: function render() {
+	    return _react2.default.createElement(
+	      'form',
+	      { id: 'addTasks' },
+	      _react2.default.createElement('input', { type: 'text', ref: 'newTask' }),
+	      _react2.default.createElement(
+	        'button',
+	        { onClick: this.submitNewTask },
+	        'Add'
+	      )
+	    );
+	  }
+	});
+
+	module.exports = AddTasks;
 
 /***/ }
 /******/ ]);
